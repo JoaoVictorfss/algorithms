@@ -1,0 +1,261 @@
+Exercício 1:
+---------------------------------------------------------------------------------------------------------
+lista_circular.c
+--------------------------------------------------------------------------------------------------------
+#include<stdio.h>
+#include<stdlib.h>
+#include"lista_circular.h"
+
+typedef struct circnode CircNode;
+struct circlist{
+    CircNode *end;
+    int size;
+    int n_times_shown;//armazena o índidice doo último elemento mostrado da lista 
+};
+
+struct circnode{
+    struct aluno data;
+    CircNode *next;
+};
+
+Circlist *create_circular_list(){
+    Circlist *li;
+    li = malloc (1 * sizeof(Circlist));
+    if(li == NULL){
+        return NULL;
+    }
+    li->end = NULL;
+    li->size = 0;
+    li->n_times_shown = 0;
+    return li;
+}
+
+int free_circular_list(Circlist *li){
+    if(li == NULL){
+        return INVALID_NULL_POINTER;
+    }
+    CircNode *aux;
+    aux = li->end->next;
+    for(int i = 1; i <= li->size; i++){
+        free(aux);
+        aux = aux->next;
+    }
+    free(li);
+    return SUCCESS;
+}
+ 
+int push_front(Circlist *li, struct aluno al){
+    if(li == NULL){
+        return INVALID_NULL_POINTER;
+    }
+    CircNode *node = malloc(sizeof(CircNode));
+    if(node == NULL){
+        return OUT_OF_MEMORY;
+    }
+    node->data = al;
+    if(li->size == 0){//lista vazia
+        li->end = node;
+        li->end->next = node;
+    }
+    else{
+        node->next = li->end->next;
+        li->end->next = node;
+    }
+    li->size ++;
+    return SUCCESS;
+}
+
+int push_back(Circlist *li, struct aluno al){
+    if(li == NULL){
+        return INVALID_NULL_POINTER;
+    }
+    CircNode *node = malloc(1*sizeof(CircNode));
+    if(node == NULL){
+        return OUT_OF_MEMORY;
+    }
+    node->data = al;
+    if(li->size == 0){//lista vazia
+        li->end = node;
+        li->end->next = node;
+    }
+    else{
+        node->next = li->end->next;
+        li->end->next = node;
+        li->end = node;
+    }
+    li->size ++;
+    return SUCCESS;
+}
+
+int pop_front(Circlist *li){
+    if(li == NULL){
+        return INVALID_NULL_POINTER;
+    }
+    if(li->size == 0){
+        return OUT_OF_MEMORY;
+    }
+    CircNode *aux = li->end->next;
+    li->end->next = aux->next;
+    free(aux);
+    li->size --; 
+    return SUCCESS;
+}
+
+int pop_back(Circlist *li){
+    if(li == NULL){
+        return INVALID_NULL_POINTER;
+    }
+    if(li->size == 0){
+        return OUT_OF_MEMORY;
+    }
+    CircNode *aux = li->end->next;
+    CircNode *aux2 = NULL;
+    for(int i = 1; i < li->size; i++){
+        aux = aux->next;
+    }
+    aux->next = li->end->next;
+    aux2 = li->end;
+    free(aux2);
+    li->end = aux;
+    li->size --;
+    return SUCCESS;
+}
+
+int pop_mat(Circlist *li, int mat){
+    if(li == NULL){
+        return INVALID_NULL_POINTER;
+    }
+    if(li->size == 0){
+        return OUT_OF_MEMORY;
+    }
+    CircNode *aux = li->end->next;
+    CircNode *aux2 = NULL;
+    int i = 1;
+    while (i <= li->size && aux->data.matricula != mat){  
+        aux2 = aux; 
+        aux = aux->next;
+        i++;
+    }
+    if( i > li->size) return ELEM_NOT_FOUND;
+    if(i == 1) return pop_front(li);
+    else if(i == li->size) return pop_back(li);
+    else aux2->next = aux->next;
+    free(aux);
+    return SUCCESS;
+}
+ 
+int imprime(Circlist *li){
+    if(li == NULL){
+        return INVALID_NULL_POINTER;
+    }
+    CircNode *aux;
+    aux = li->end->next;
+    for(int i = 1; i <= li->size; i++){
+        printf("________________________________________________________\n");
+        printf("nome: %s\n", aux->data.nome);
+        printf("matricula: %d\n", aux->data.matricula);
+        printf("Notas: %f, %f, %f\n", aux->data.n1, aux->data.n2, aux->data.n3);
+        printf("\n");
+        aux = aux->next;
+    }
+    return SUCCESS;
+}
+
+int size_circular_list(Circlist *li){
+    if(li == NULL){
+        return INVALID_NULL_POINTER;
+    }
+    return li->size;
+}
+
+---------------------------------------------------------------------------------------------------------
+lista_circular.h
+--------------------------------------------------------------------------------------------------------
+#define SUCCESS 0
+#define OUT_OF_MEMORY -1
+#define ELEM_NOT_FOUND -2
+#define INVALID_NULL_POINTER -3
+#define INVALID_VALOR -4
+#define ELEMENT_OUT_OF_RANGE -5
+
+
+struct aluno{
+    char nome[30];
+    int matricula;
+    float n1, n2, n3;
+};
+
+typedef struct circlist Circlist;
+
+Circlist *create_circular_list();
+int free_circular_list(Circlist *li);
+int push_front(Circlist *li, struct aluno al);
+int push_back(Circlist *li, struct aluno al);
+int pop_front(Circlist *li);
+int imprime(Circlist *li);
+int size_circular_list(Circlist *li);
+int pop_back(Circlist *li);
+int show_element(Circlist *li);
+int pop_mat(Circlist *li, int mat);
+_____________________________________________________________________
+Exercício2
+
+int show_element(Circlist *li){
+    if(li == NULL){
+        return INVALID_NULL_POINTER;
+    }
+    if(li->size == 0){
+        return OUT_OF_MEMORY;
+    }
+    if(li->n_times_shown == li->size){
+        li->n_times_shown = 0;
+    }
+    CircNode *node = li->end->next;
+    for(int i = 0; i < li->n_times_shown; i++){
+        node = node->next;
+    }
+    printf("________________________________________________________\n");
+    printf("\nnome: %s\n", node->data.nome);
+    printf("matricula: %d\n", node->data.matricula);
+    printf("Notas: %f, %f, %f\n", node->data.n1, node->data.n2, node->data.n3);
+    printf("\n");
+    li->n_times_shown ++;
+    return SUCCESS;
+}
+_____________________________________________________________________
+Exercício3
+
+#include<stdio.h>
+#include<stdlib.h>
+#include"lista_circular.h"
+
+
+int main(){
+    struct aluno *aluno;
+    Circlist *li = create_circular_list();
+    int tam;
+    struct aluno *aux;
+    struct aluno array[4] = {{"joao", 3, 8.0, 9.0, 8.7}, {"victor", 6, 10.0, 10.0, 10.0}, {"bruno", 10, 9.0, 10.0, 11.0}, {"Nandara", 10, 9.0, 10.0, 11.0}};
+    struct aluno josiani = {"josiani", 3, 10, 10, 10}; 
+    for(int i = 0; i < 4; i++){
+        push_back(li, array[i]);
+        tam = size_circular_list(li);
+        printf("Tamanho até aqui: %d\n", tam);
+    }
+    push_front(li, josiani);
+    printf("Circulando a lista duas vezes:\n");
+    for(int i = 0 ; i < 2*size_circular_list(li); i++){
+        show_element(li);
+    }
+    printf("________________________________________________________\n");
+    printf("Apagando o primeiro aluno...\n");
+    pop_front(li);
+    imprime(li);
+    printf("________________________________________________________\n");
+    printf("Apagando o útimo aluno...\n");
+    pop_back(li);
+    imprime(li);
+    free_circular_list(li);
+    return 0;
+}
+
