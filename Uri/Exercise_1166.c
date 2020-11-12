@@ -1,8 +1,7 @@
 /*
 *@author João Victor
 *@date 23.08.2020
-* binary search tree
-* Tower of Hanoi => dynamic programming
+*Tower of Hanoi => dynamic programming
 */
 
 #include <stdio.h>
